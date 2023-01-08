@@ -1,0 +1,13 @@
+{
+  "cSpell.words": [
+    "anyio",
+    "fastapi",
+    "idna",
+    "pipfile",
+    "pydantic",
+    "pypi",
+    "sniffio",
+    "starlette",
+    "uvicorn"
+  ]
+}
