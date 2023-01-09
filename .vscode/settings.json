@@ -1,12 +1,16 @@
 {
   "cSpell.words": [
+    "aarch",
     "anyio",
+    "autoflush",
     "fastapi",
     "idna",
     "pipfile",
     "pydantic",
     "pypi",
+    "sessionmaker",
     "sniffio",
+    "sqlalchemy",
     "starlette",
     "uvicorn"
   ]
