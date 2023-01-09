@@ -3,7 +3,13 @@ from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from database.database import *
+from models import models
+
 app = FastAPI()
+
+
+models.Base.metadata.create_all(bind=engine)
 
 
 class Blog(BaseModel):
