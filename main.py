@@ -1,15 +1,15 @@
 from typing import Optional
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+
+from database.database import *
+from models import models
+from schemas.schemas import Blog
 
 app = FastAPI()
 
 
-class Blog(BaseModel):
-    title : str
-    description: str
-    published: Optional[bool]
+models.Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
