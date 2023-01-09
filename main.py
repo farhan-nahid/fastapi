@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -14,8 +16,8 @@ def about():
 
 
 @app.get("/blogs")
-def blog():
-    return {"data": ["blog1", "blog2", "blog3"]}
+def blog(limit:Optional[int] = 10, published:Optional[bool] = True, sort: Optional[str] = None ):
+    return {"data": ["blog1", "blog2", "blog3"], "limit":limit, "published":published, "sort":sort}
 
 
 @app.get("/blog/{id}")
