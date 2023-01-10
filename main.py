@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database.database import *
@@ -35,14 +35,11 @@ def blog(limit:Optional[int] = 10, published:Optional[bool] = True, sort: Option
     return {"data": ["blog1", "blog2", "blog3"], "limit":limit, "published":published, "sort":sort}
 
 
-@app.get("/blog/{id}")
-def blog(id):
-    return {"data":{"blog_id": id}}
 
 
 # connection to database
 
-@app.post("/blog")
+@app.post("/blog", status_code=status.HTTP_201_CREATED)
 def add_blog(blog : Blog, db: Session= Depends(get_db)):
     new_blog = models.Blog(title=blog.title, description=blog.description, published=blog.published)
     db.add(new_blog)
@@ -51,9 +48,16 @@ def add_blog(blog : Blog, db: Session= Depends(get_db)):
     return new_blog
    
 
-@app.get("/blog")
+@app.get("/blog", status_code=status.HTTP_200_OK)
 def get_blog(db: Session= Depends(get_db)):
     blogs = db.query(models.Blog).all()
     return blogs
 
 
+@app.get("/blog/{id}", status_code=status.HTTP_200_OK)
+def get_blog_by_id(id:int, db: Session= Depends(get_db)):
+    blog = db.query(models.Blog).filter(models.Blog.id == id).first()
+    if not blog:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} is not available")
+    else :
+        return blog
