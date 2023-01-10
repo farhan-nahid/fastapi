@@ -1,8 +1,9 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from sqlalchemy.orm import Session
 
 from database.database import *
+from fastapi import Depends, FastAPI
 from models import models
 from schemas.schemas import Blog
 
@@ -22,7 +23,8 @@ def about():
     return {"data":"about page"}
 
 @app.post("/blog")
-def add_blog(blog : Blog):
+def add_blog(blog : Blog, db: Session= Depends()):
+    return db
     return {"data" : {"title": blog.title, "description": blog.description, "published": blog.published},"message" : "New Blog Created"}
 
 
