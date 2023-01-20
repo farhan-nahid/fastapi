@@ -1,16 +1,25 @@
 from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from database.database import *
 from models import models
-from schemas.schemas import Blog
+from schemas.schemas import Blog, User
 
 app = FastAPI()
 
-
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 models.Base.metadata.create_all(bind=engine)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
 
 def get_db():
     db = SessionLocal()
@@ -83,3 +92,19 @@ def update(id, request: Blog, db: Session= Depends(get_db)):
         blog.update(request.dict())
         db.commit()
         return {"message": "Blog updated successfully"}
+    
+    
+# user / auth routes
+
+@app.post("/user", status_code=status.HTTP_201_CREATED)
+def create_user(request: User, db: Session= Depends(get_db)):
+    new_user = models.User(name=request.name, email=request.email, password= get_password_hash(request.password))
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+@app.get("/user", status_code=status.HTTP_200_OK)
+def get_user(db: Session= Depends(get_db)):
+    users = db.query(models.User).all()
+    return users
